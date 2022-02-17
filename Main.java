@@ -64,17 +64,9 @@ public class Main   {
             System.out.println(Arrays.toString(prevAnswers[i]) + " " + Arrays.toString(prevResults[i]));
         }*/
 
-
-        for(int i = 0; i < 6; i++)	{
-            for(int j = 0; j < 5; j++)	{
-                System.out.print((prevAnswers[i][j]).toUpperCase());
-            }
-            System.out.print(" ");
-            for(int j = 0; j < 5; j++)	{
-                System.out.print(prevResults[i][j]);
-            }
-            System.out.println();
-        }
+        System.out.print("\033[H\033[2J");  
+        System.out.flush();  
+        print();
         
         if(correctLetters == 5) {
             System.out.println("you von");
@@ -91,7 +83,8 @@ public class Main   {
 
         File file = new File("sgb-words.txt");
         Scanner scanFile = new Scanner(file);
-
+        System.out.print("\033[H\033[2J");  
+        System.out.flush();
         for(int i = 0; i < 6; i++)	{
             for(int j = 0; j < 5; j++)	{
                 prevAnswers[i][j] = ".";
@@ -137,13 +130,14 @@ public class Main   {
 
 
     public static void playAgain() {
-        System.out.println("play again (y/n)? ");
-        if(scan.next().equals("y")) {
+        System.out.print("play again (y/n)? ");
+        String yesno = scan.next().toLowerCase();
+        if(yesno.equals("y")) {
             guessCount = 0;
             for(int i = 0; i < 6; i++)	{
                 for(int j = 0; j < 5; j++)	{
-                    prevAnswers[i][j] = ".";
-                    prevResults[i][j] = ".";
+                    prevAnswers[i][j] = "";
+                    prevResults[i][j] = "";
                 }
             }
             answer = words.get(rand.nextInt(words.size()));
@@ -152,7 +146,7 @@ public class Main   {
             }
             System.out.println(answer);
             guess();
-        } else if(scan.next().equals("n"))  {
+        } else if(yesno.equals("n"))  {
             System.out.println("FUCK YOU!!!!!");
         } else  {
             playAgain();
@@ -161,20 +155,27 @@ public class Main   {
     }
 
     public static void guess() {
-        if(guessCount > 6){
+        if(guessCount > 5){
             System.out.println("No guesses left bozo");
             playAgain();
         }   else    {
             guessLetters.clear();
+            
             guess = (scan.next()).toLowerCase();
             int count = 0;
             for(int i = 0; i < words.size(); i++)	{
                 if(guess.equals(words.get(i)))  {
                     ++count;
+                    if(count == 6)  {
+                        System.out.println("No guesses left bozo");
+                        playAgain();
+                    }
                 } 
             }
             if (count == 0) {
+                print();
                 System.out.println("Please input a valid word!");
+
                 guess();
             }   else    {
                 ++guessCount;
@@ -188,6 +189,21 @@ public class Main   {
         }
         
    
+    }
+
+    public static void print()  {
+        System.out.print("\033[H\033[2J");  
+        System.out.flush();  
+        for(int i = 0; i < guessCount; i++)	{
+            for(int j = 0; j < 5; j++)	{
+                System.out.print((prevAnswers[i][j]).toUpperCase());
+            }
+            System.out.print(" ");
+            for(int j = 0; j < 5; j++)	{
+                System.out.print(prevResults[i][j]);
+            }
+            System.out.println();
+        }
     }
 
 }
