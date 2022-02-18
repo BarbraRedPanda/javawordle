@@ -2,6 +2,8 @@
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -20,6 +22,14 @@ public class Main   {
     public static String[][] prevAnswers = new String[6][5];
     public static String[][] prevResults = new String[6][5];
     public static Random rand = new Random();
+    public static int ansNumb;
+    public static int encodedNum;
+    public static LocalDate dateObj = LocalDate.now();
+    public static DateTimeFormatter format1 = DateTimeFormatter.ofPattern("MMddyyyy");
+    public static DateTimeFormatter format2 = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+    public static String filtDate = dateObj.format(format1);
+    public static String filtDate2 = dateObj.format(format2);
+    
     
     /*public static String[][] prevAnswers = {
                                             {".", ".", ".", ".", "."},
@@ -67,8 +77,8 @@ public class Main   {
         clearOut(); 
         print();
         
-        if(correctLetters == 5) {
-            System.out.println("you von");
+        if(correctLetters == 5) {           //Note: logic could be written as guess.equals(answer), kept it this way just inh case i wanted to do something 
+            System.out.print("you von, ");
             playAgain();
         }   else    {
             guess();
@@ -76,12 +86,21 @@ public class Main   {
         
     }
 
-
-    
     public static void main(String[] args) throws FileNotFoundException{
 
         File file = new File("sgb-words.txt");
         Scanner scanFile = new Scanner(file);
+        
+
+        
+        
+        encodedNum = 0;
+        for(int i = 0; i < 8; i++)	{
+            if(i < 2 || i > 3) encodedNum = encodedNum + Integer.parseInt(filtDate.substring(i, i + 1));
+            else if(i >= 2 && i < 4) encodedNum = encodedNum + (2*(Integer.parseInt(filtDate.substring(i, i + 1))));
+        }
+        
+
         clearOut();
         /*for(int i = 0; i < 6; i++)	{
             for(int j = 0; j < 5; j++)	{
@@ -96,12 +115,13 @@ public class Main   {
             //System.out.print(words.get(i) + ", ");
         }
 
-        answer = words.get(rand.nextInt(words.size()));
+
         
-        for(int i = 0; i < answer.length(); i++){
-            ansLetters.add(answer.substring(i, i+1));
-            //System.out.println(ansLetters.get(i));
-        }
+        System.out.print("Daily or random? (d/r) ");
+        String daily = scan.nextLine().toLowerCase();
+        clearOut();
+        if(daily.equals("d")) newAnswer(true);
+        else newAnswer(false);
         //System.out.println(answer);
 
 
@@ -127,16 +147,20 @@ public class Main   {
     }
 
 
-    public static void newAnswer()  {
+    public static void newAnswer(Boolean daily)  {
         ansLetters.clear();
-        answer = words.get(rand.nextInt(words.size()));
+        
+        if(!daily) ansNumb = rand.nextInt(words.size());
+        else if(daily) ansNumb = (encodedNum);
+        answer = words.get(ansNumb);
+
         for(int i = 0; i < answer.length(); i++){
             ansLetters.add(answer.substring(i, i+1));
         }
     }
 
     public static void playAgain() {
-        System.out.print("play again (y/n)? ");
+        System.out.print("play again? (y/n) ");
         String yesno = scan.next().toLowerCase();
         if(yesno.equals("y")) {
             clearOut();
@@ -147,11 +171,12 @@ public class Main   {
                     prevResults[i][j] = "";
                 }
             }
-            newAnswer();
-            System.out.println(answer);
+            newAnswer(false);
+            //System.out.println(answer);
             guess();
         } else if(yesno.equals("n"))  {
             System.out.println("FUCK YOU!!!!!");
+            playAgain();
         } else  {
             playAgain();
         }
@@ -165,8 +190,15 @@ public class Main   {
             playAgain();
         }   else    {
             guessLetters.clear();
-            if(guessCount == 0) System.out.print("Guess: ");
+            if(guessCount == 0) {
+                print();
+                System.out.print("Guess: ");
+            } 
             guess = (scan.next()).toLowerCase();
+            if(guess.equals("hackermans")) {
+                System.out.println(answer);
+                guess();
+            }
             Boolean listed = false;
             for(int i = 0; i < words.size(); i++)	{
                 if(guess.equals(words.get(i)))  {
@@ -176,7 +208,7 @@ public class Main   {
             if (!listed) {
                 print();
                 System.out.println("Please input a valid word!");
-
+                System.out.print("Guess: ");
                 guess();
             }   else    {
                 ++guessCount;
@@ -197,6 +229,7 @@ public class Main   {
     }
     public static void print()  {
         clearOut();
+        System.out.println("Wordle #" + (ansNumb + 1) + " " + filtDate2);
         for(int i = 0; i < guessCount; i++)	{
             for(int j = 0; j < 5; j++)	{
                 System.out.print((prevAnswers[i][j]).toUpperCase());
@@ -208,6 +241,7 @@ public class Main   {
             System.out.println();
         }
     }
+
 
 }
 
