@@ -64,8 +64,7 @@ public class Main   {
             System.out.println(Arrays.toString(prevAnswers[i]) + " " + Arrays.toString(prevResults[i]));
         }*/
 
-        System.out.print("\033[H\033[2J");  
-        System.out.flush();  
+        clearOut(); 
         print();
         
         if(correctLetters == 5) {
@@ -83,14 +82,13 @@ public class Main   {
 
         File file = new File("sgb-words.txt");
         Scanner scanFile = new Scanner(file);
-        System.out.print("\033[H\033[2J");  
-        System.out.flush();
-        for(int i = 0; i < 6; i++)	{
+        clearOut();
+        /*for(int i = 0; i < 6; i++)	{
             for(int j = 0; j < 5; j++)	{
                 prevAnswers[i][j] = ".";
                 prevResults[i][j] = ".";
             }
-        }
+        }*/
         
         while(scanFile.hasNext())    {
             String word = scanFile.next();
@@ -104,7 +102,7 @@ public class Main   {
             ansLetters.add(answer.substring(i, i+1));
             //System.out.println(ansLetters.get(i));
         }
-        System.out.println(answer);
+        //System.out.println(answer);
 
 
         //ArrayList<String> tries = new ArrayList<String>();
@@ -129,10 +127,19 @@ public class Main   {
     }
 
 
+    public static void newAnswer()  {
+        ansLetters.clear();
+        answer = words.get(rand.nextInt(words.size()));
+        for(int i = 0; i < answer.length(); i++){
+            ansLetters.add(answer.substring(i, i+1));
+        }
+    }
+
     public static void playAgain() {
         System.out.print("play again (y/n)? ");
         String yesno = scan.next().toLowerCase();
         if(yesno.equals("y")) {
+            clearOut();
             guessCount = 0;
             for(int i = 0; i < 6; i++)	{
                 for(int j = 0; j < 5; j++)	{
@@ -140,10 +147,7 @@ public class Main   {
                     prevResults[i][j] = "";
                 }
             }
-            answer = words.get(rand.nextInt(words.size()));
-            for(int i = 0; i < answer.length(); i++){
-                ansLetters.add(answer.substring(i, i+1));
-            }
+            newAnswer();
             System.out.println(answer);
             guess();
         } else if(yesno.equals("n"))  {
@@ -157,29 +161,26 @@ public class Main   {
     public static void guess() {
         if(guessCount > 5){
             System.out.println("No guesses left bozo");
+            System.out.println("Correct answer: " + answer);
             playAgain();
         }   else    {
             guessLetters.clear();
-            
+            if(guessCount == 0) System.out.print("Guess: ");
             guess = (scan.next()).toLowerCase();
-            int count = 0;
+            Boolean listed = false;
             for(int i = 0; i < words.size(); i++)	{
                 if(guess.equals(words.get(i)))  {
-                    ++count;
-                    if(count == 6)  {
-                        System.out.println("No guesses left bozo");
-                        playAgain();
-                    }
-                } 
+                    listed = true;
+                }
             }
-            if (count == 0) {
+            if (!listed) {
                 print();
                 System.out.println("Please input a valid word!");
 
                 guess();
             }   else    {
                 ++guessCount;
-                for(int i = 0; i < guess.length(); i++){
+                for(int i = 0; i < guess.length(); i++) {
                     guessLetters.add(guess.substring(i, i+1));
                     //System.out.println(guessLetters.get(i));
                     prevAnswers[guessCount-1][i] = guess.substring(i, i+1);
@@ -190,10 +191,12 @@ public class Main   {
         
    
     }
-
-    public static void print()  {
+    public static void clearOut()   {
         System.out.print("\033[H\033[2J");  
-        System.out.flush();  
+        System.out.flush(); 
+    }
+    public static void print()  {
+        clearOut();
         for(int i = 0; i < guessCount; i++)	{
             for(int j = 0; j < 5; j++)	{
                 System.out.print((prevAnswers[i][j]).toUpperCase());
