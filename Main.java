@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Scanner;
 import java.util.Random;
 
@@ -29,15 +30,18 @@ public class Main   {
     public static DateTimeFormatter format2 = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     public static String filtDate = dateObj.format(format1);
     public static String filtDate2 = dateObj.format(format2);
+    //public static int losses = 0;
+    public static ArrayList<Integer> winStats = new ArrayList<Integer>();
     
-    
-    /*public static String[][] prevAnswers = {
-                                            {".", ".", ".", ".", "."},
-                                            {".", ".", ".", ".", "."},
-                                            {".", ".", ".", ".", "."},
-                                            {".", ".", ".", ".", "."},
-                                            {".", ".", ".", ".", "."},
-                                            {".", ".", ".", ".", "."},
+
+    public static ArrayList<ArrayList<String>> statsOut = new ArrayList<ArrayList<String>>();
+    /*public static String[][] statsOut = {
+                                            {"|", ".", ".", ".", ".". },
+                                            {"|", ".", ".", ".", "."},
+                                            {"|", ".", ".", ".", "."},
+                                            {"|", ".", ".", ".", "."},
+                                            {"|", ".", ".", ".", "."},
+                                            {"|", ".", ".", ".", "."},
                                             };
     public static String[][] prevResults = {
                                             {".", ".", ".", ".", "."},
@@ -79,8 +83,11 @@ public class Main   {
         
         if(correctLetters == 5) {           //Note: logic could be written as guess.equals(answer), kept it this way just inh case i wanted to do something 
             System.out.print("you von, ");
+            winStats.add((guessCount));
+            //System.out.println(guessCount);
             playAgain();
         }   else    {
+            //System.out.println(guessCount);
             guess();
         }
         
@@ -176,7 +183,8 @@ public class Main   {
             guess();
         } else if(yesno.equals("n"))  {
             System.out.println("FUCK YOU!!!!!");
-            playAgain();
+            printStats();
+            //playAgain();
         } else  {
             playAgain();
         }
@@ -187,6 +195,7 @@ public class Main   {
         if(guessCount > 5){
             System.out.println("No guesses left bozo");
             System.out.println("Correct answer: " + answer);
+            winStats.add((guessCount));
             playAgain();
         }   else    {
             guessLetters.clear();
@@ -230,6 +239,7 @@ public class Main   {
     public static void print()  {
         clearOut();
         System.out.println("Wordle #" + (ansNumb + 1) + " " + filtDate2);
+        System.out.println(answer);
         for(int i = 0; i < guessCount; i++)	{
             for(int j = 0; j < 5; j++)	{
                 System.out.print((prevAnswers[i][j]).toUpperCase());
@@ -241,6 +251,65 @@ public class Main   {
             System.out.println();
         }
     }
+
+    public static void printStats()  {
+        clearOut();
+        //int[] gcFreq = new int[7];
+        ArrayList<Integer> gcFreq = new ArrayList<Integer>();
+        for(int i = 1; i < 8; i++)	{
+            gcFreq.add(Collections.frequency(winStats, i));
+        }
+        int highest = gcFreq.get(0);
+        for(int i = 0; i < gcFreq.size(); i++)	{
+            
+            if(gcFreq.get(i) > highest) {
+                highest = gcFreq.get(i);
+            }
+
+        }
+        for(int i = 0; i < highest; i++)	{
+            statsOut.add(new ArrayList<String>());
+            statsOut.get(i).add(0, "|");
+            for(int j = 0; j < 7; j++)	{
+                if(gcFreq.get(j) >= (highest-i))  {
+                    statsOut.get(i).add(j+1, "# ");
+                }   else{
+                    statsOut.get(i).add(j+1, "  ");
+                }
+                
+            }
+            
+            
+        }
+        statsOut.add(new ArrayList<String>());
+        for(int i = 0; i < 7; i++)	{
+            if(i == 0) statsOut.get(highest).add(i, "|" + Integer.toString(i+1) + " ");
+            else if(i == 6) statsOut.get(highest).add(i, "L");
+            else statsOut.get(highest).add(i, Integer.toString(i+1) + " ");
+        }
+        for(int i = 0; i < (highest + 1); i++)	{
+            for(int j = 0; j < statsOut.get(i).size(); j++)	{
+                System.out.print(statsOut.get(i).get(j));
+            }
+            System.out.println();
+            if(i == highest-1)    {
+                System.out.print("|- -");
+                for(int j = 0; j < 4; j++)	{
+                    System.out.print(" -");
+                }
+                System.out.println(" -");
+            }
+        }
+        
+        
+    }
+
+
+    /*public static void finalLists(String result, int howManyGuesses)  {
+        winStats.add(guessCount);
+
+    }*/
+
 
 
 }
