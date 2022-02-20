@@ -195,7 +195,7 @@ public class Main   {
         if(guessCount > 5){
             System.out.println("No guesses left bozo");
             System.out.println("Correct answer: " + answer);
-            winStats.add((guessCount));
+            winStats.add((guessCount+1));
             playAgain();
         }   else    {
             guessLetters.clear();
@@ -239,7 +239,7 @@ public class Main   {
     public static void print()  {
         clearOut();
         System.out.println("Wordle #" + (ansNumb + 1) + " " + filtDate2);
-        System.out.println(answer);
+        //System.out.println(answer);
         for(int i = 0; i < guessCount; i++)	{
             for(int j = 0; j < 5; j++)	{
                 System.out.print((prevAnswers[i][j]).toUpperCase());
@@ -272,7 +272,7 @@ public class Main   {
             statsOut.get(i).add(0, "|");
             for(int j = 0; j < 7; j++)	{
                 if(gcFreq.get(j) >= (highest-i))  {
-                    statsOut.get(i).add(j+1, "# ");
+                    statsOut.get(i).add(j+1, "#");
                 }   else{
                     statsOut.get(i).add(j+1, "  ");
                 }
